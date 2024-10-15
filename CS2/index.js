@@ -14,3 +14,4 @@ const { translate } = require("./utils/translate");
         console.log(e);
     }
 })();
+// test
