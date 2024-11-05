@@ -1,0 +1,12 @@
+uploads/
+# .env
+consumer.js
+publisher.js
+index.js
+test.sh
+time.sh
+testTranslate.js
+Dockerfile
+.dockerignore
+node_modules/
+output/
