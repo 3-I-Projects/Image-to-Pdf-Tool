@@ -1,0 +1,25 @@
+{
+  "name": "cs2",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "devStart": "nodemon index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "Hi. This is a description.",
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "execution-time": "^1.4.1",
+    "express": "^4.21.1",
+    "multer": "^1.4.5-lts.1",
+    "node-tesseract-ocr": "^2.2.1",
+    "open-google-translator": "^1.0.5",
+    "path": "^0.12.7",
+    "pdfkit": "^0.15.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}
