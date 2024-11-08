@@ -20,6 +20,7 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { sendToQueue, consumeFromQueue } = require('./utils/connection')
 
 const app = express();
 const upload = multer({ dest: 'uploads/' });
@@ -45,13 +46,22 @@ app
 
         // Dynamically rename the file with the extension taken from mimetype
         const newFileName = file.filename + '.' + file.mimetype.split('/')[1];
-        
+        console.log(file.originalname)
+
         // Create new path for the new file
         const newPath = path.join(__dirname, 'uploads', newFileName);
 
+        // Send the new file to the queue
+        sendToQueue('ocrQueue', newPath);
+
+        // consumeFromQueue('f?inishedPdfQueue', (pdfFile) => {
+        //     console.log('pdf file isd: ' + pdfFile);
+        //     res.download(pdfFile);
+        // })
+
         // Sync the new file with the old file using the `fs` module
         fs.renameSync(file.path, newPath);
-        res.send('Uploaded');
+        // res.send('Uploaded');
     });
 
 app.listen(3000);

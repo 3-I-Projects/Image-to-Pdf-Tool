@@ -6,7 +6,7 @@ async function ocrFilter() {
     consumeFromQueue('ocrQueue', async (imagePath) => {
         // console.log('image is' + image.data);
         const text = await image2text(imagePath);
-        console.log('text to be processed ' + text);
+        console.log('text to be processed: ' + text);
         await sendToQueue('translateQueue', text);
     })
 }

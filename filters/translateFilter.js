@@ -5,7 +5,7 @@ async function translateFilter() {
     consumeFromQueue('translateQueue', async (text) => {
         // console.log('text from translateQueue' + text);
         const translatedText = await translate(text);
-        console.log('translated text ' + translatedText);
+        console.log('translated text: "' + translatedText + '"');
         sendToQueue('pdfQueue', translatedText);
     })
 }
