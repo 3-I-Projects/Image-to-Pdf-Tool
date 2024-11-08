@@ -20,6 +20,7 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const uuid4 = require('uuid4');
 const { sendToQueue, consumeFromQueue } = require('./utils/connection')
 
 const app = express();
@@ -43,18 +44,21 @@ app
     // Listen for post request from client
     .post(upload.single('file'), (req, res) => {
         const file = req.file;
-
+        const id = uuid4();
+        console.log('id: ' + id);
+        
         // Dynamically rename the file with the extension taken from mimetype
         const newFileName = file.filename + '.' + file.mimetype.split('/')[1];
         console.log(file.originalname)
-
+        
         // Create new path for the new file
         const newPath = path.join(__dirname, 'uploads', newFileName);
-
+        
+        const data = { id: id, path: newPath, originalname: file.originalname };
         // Send the new file to the queue
-        sendToQueue('ocrQueue', newPath);
+        sendToQueue('ocrQueue', data);
 
-        // consumeFromQueue('f?inishedPdfQueue', (pdfFile) => {
+        // consumeFromQueue('finishedPdfQueue', (pdfFile) => {
         //     console.log('pdf file isd: ' + pdfFile);
         //     res.download(pdfFile);
         // })

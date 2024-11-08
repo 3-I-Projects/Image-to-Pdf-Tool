@@ -19,7 +19,8 @@
     "node-tesseract-ocr": "^2.2.1",
     "open-google-translator": "^1.0.5",
     "path": "^0.12.7",
-    "pdfkit": "^0.15.0"
+    "pdfkit": "^0.15.0",
+    "uuid4": "^2.0.3"
   },
   "devDependencies": {
     "nodemon": "^3.1.7"
