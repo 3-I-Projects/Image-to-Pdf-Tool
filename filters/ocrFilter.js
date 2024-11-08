@@ -11,4 +11,5 @@ async function ocrFilter() {
     })
 }
 
+// hi @2uan2, please resolve issue #2
 ocrFilter();
