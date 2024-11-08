@@ -10,6 +10,8 @@
   "license": "ISC",
   "description": "Hi. This is a description.",
   "dependencies": {
+    "amqplib": "^0.10.4",
+    "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
     "execution-time": "^1.4.1",
     "express": "^4.21.1",
