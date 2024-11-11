@@ -1,19 +1,156 @@
-<html lang="en">
+<!DOCTYPE html>
+<html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Index</title>
+    <style>
+        body {
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            font-family: "Arial", sans-serif;
+            background-color: #ffebd6;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background-color: #ffeab6;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgb(50, 50, 50);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .container h1 {
+            font-size: 32px;
+            color: orange;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .content-box {
+            background-color: #d7f2e3;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgb(51, 51, 51);
+            flex-direction: column;
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .step {
+            width: 100%;
+            text-align: left;
+            font-size: 16px;
+        }
+
+        .step label {
+            font-weight: bold;
+            color: #333333;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .step input[type="file"],
+        .step select {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 15px 25px;
+            margin-top: 20px;
+            background-color: #ff8a47;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .button:hover {
+            background-color: #ff6a20;
+            transform: translateY(-2px);
+        }
+    </style>
+
 </head>
 
 <body>
-    <form action="/upload" enctype="multipart/form-data" method="post" id="fileUploadForm">
-        <label for="name">First Name
-            <input type="file" name="file" id="fileInput">
-        </label>
-        <button type="submit">Upload</button>
-    </form>
-    <script src="/CS2/js/scripts.js"></script>
+    <div class="container">
+        <h1>IMAGE-TEXT-PDF</h1>
+        <form action="/upload" id="upload-form" enctype="multipart/form-data" method="post">
+            <div class="content-box">
+                <div class="step">
+                    <label>Step 1: Upload your images</label>
+                    <input type="file" name="file" id="image-input" accept=".img, .jpg, .jpeg, .png" required multiple>
+                </div>
+                <div class="step">
+                    <label>Step 2: Choose your language to translate</label>
+                    <select id="languageSelect">
+                        <option value="Vietnamese">Vietnamese</option>
+                        <option value="Chinese">Chinese</option>
+                        <option value="Japanese">Japanese</option>
+                        <option value="Spanish">Spanish</option>
+                    </select>
+                </div>
+                <div class="step">
+                    <label>Step 3: Convert to file type</label>
+                    <select id="fileTypeSelect">
+                        <option value="pdf">.pdf</option>
+                        <option value="docx">.docx</option>
+                        <option value="txt">.txt</option>
+                        <option value="exe">.exe</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="button" id="submit-button">Convert &rarr;</button>
+        </form>
+    </div>
 </body>
+<script>
+    // function goToResultPage() {
+    //     window.location.href = "finished.ejs?fileLink=download/sample.pdf";
+    // }
+
+    const uploadForm = document.getElementById('upload-form');
+    const fileInput = document.getElementById('image-input');
+
+    uploadForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formData = new FormData();
+        const files = fileInput.files;
+
+        for (let i = 0; i < files.length; ++i) {
+            formData.append('file', files[i]);
+        }
+
+        fetch('/upload', {
+            method: 'post',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Handle error, e.g., display an error message to the user
+            });
+    })
+</script>
 
 </html>
