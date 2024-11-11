@@ -1,4 +1,3 @@
-const fs = require('fs');
 const { sendToQueue, consumeFromQueue } = require('../utils/connection');
 const { image2text } = require('../utils/ocr');
 
