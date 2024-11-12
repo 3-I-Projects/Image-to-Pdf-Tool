@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
     <meta charset="UTF-8" />
@@ -86,7 +86,6 @@
             transform: translateY(-2px);
         }
     </style>
-
 </head>
 
 <body>
@@ -96,7 +95,7 @@
             <div class="content-box">
                 <div class="step">
                     <label>Step 1: Upload your images</label>
-                    <input type="file" name="file" id="image-input" accept=".img, .jpg, .jpeg, .png" required multiple>
+                    <input type="file" name="image-upload" id="image-input" accept=".img, .jpg, .jpeg, .png" multiple>
                 </div>
                 <div class="step">
                     <label>Step 2: Choose your language to translate</label>
@@ -121,36 +120,4 @@
         </form>
     </div>
 </body>
-<script>
-    // function goToResultPage() {
-    //     window.location.href = "finished.ejs?fileLink=download/sample.pdf";
-    // }
-
-    const uploadForm = document.getElementById('upload-form');
-    const fileInput = document.getElementById('image-input');
-
-    uploadForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const formData = new FormData();
-        const files = fileInput.files;
-
-        for (let i = 0; i < files.length; ++i) {
-            formData.append('file', files[i]);
-        }
-
-        fetch('/upload', {
-            method: 'post',
-            body: formData
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                // Handle error, e.g., display an error message to the user
-            });
-    })
-</script>
-
 </html>
