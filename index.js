@@ -37,9 +37,9 @@ app.get('/', (req, res) => {
 datas = {};
 
 // Upload directory
-app.get('/upload', (req, res) => {
-    res.render('file_upload');
-});
+// app.get('/upload', (req, res) => {
+//     res.render('file_upload');
+// });
 
 // Listen for post request from client
 app.post('/upload', upload.array('image-upload'), (req, res) => {    
@@ -50,14 +50,14 @@ app.post('/upload', upload.array('image-upload'), (req, res) => {
         const newFileName = file.filename + '.' + file.mimetype.split('/')[1];
         const newPath = path.join(__dirname, 'uploads', newFileName);
 
-        fs.renameSync(file.path, newPath);
-
         const data = { id: id, path: newPath, originalname: file.originalname, status: 'pending' };
         datas[data.id] = data;
         console.log('datas is ');
         console.log(datas);
         console.log('data with id : ' + data.id + ' is ' + data.status);
         sendToQueue('ocrQueue', data);
+        
+        fs.renameSync(file.path, newPath);
     })
     res.redirect('/finished');
 });
@@ -66,6 +66,7 @@ consumeFromQueue('finishedPdfQueue', (pdfFile) => {
     console.log('pdffile = ', pdfFile);
     if (pdfFile) {
         datas[pdfFile.id].status = 'finished';
+        datas[pdfFile.id].path = pdfFile.path;
     }
 });
     
@@ -75,6 +76,10 @@ app.get('/upload/:id', (req, res) => {
     const status = data.status;
     console.log('id is :' + id);
     console.log(status);
+    // res.send(status);
+    console.log(data.path);
+    console.log('originalname is ' + data.originalname);
+    res.download(data.path, data.originalname.split('.')[0] + '.pdf');
 });
 
 app.listen(3000, () => console.log('Server started on port 3000'));

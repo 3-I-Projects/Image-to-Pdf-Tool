@@ -3,7 +3,7 @@ const { createPDF } = require('../utils/pdf');
 
 async function pdfFilter() {
     consumeFromQueue('pdfQueue', async (translatedData) => {
-        const pdfFile = await createPDF(translatedData.text);
+        const pdfFile = await createPDF(translatedData);
         const data = { id: translatedData.id, path: pdfFile };
         console.log('pdf created at ' + data.path);
         sendToQueue('finishedPdfQueue', data);
