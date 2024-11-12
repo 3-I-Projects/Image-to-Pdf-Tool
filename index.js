@@ -34,6 +34,8 @@ app.get('/', (req, res) => {
     res.send('<p> Please go to <a href="/upload">Upload page</a></p>')
 });
 
+datas = {};
+
 // Upload directory
 app
     // Route the application to /upload
@@ -55,7 +57,11 @@ app
             // Create new path for the new file
             const newPath = path.join(__dirname, 'uploads', newFileName);
             
-            const data = { id: id, path: newPath, originalname: file.originalname };
+            const data = { id: id, path: newPath, originalname: file.originalname, status: 'pending' };
+            datas[data.id] = data;
+            console.log('datas is ');
+            console.log(datas);
+            console.log('data with id : ' + data.id + ' is ' + data.status);
             
             // Send the new file to the queue
             sendToQueue('ocrQueue', data);
@@ -64,15 +70,21 @@ app
             fs.renameSync(file.path, newPath);
             res.render('finished')
         })
-
-        
-
-        // consumeFromQueue('finishedPdfQueue', (pdfFile) => {
-        //     console.log('pdf file isd: ' + pdfFile);
-        //     res.download(pdfFile);
-        // })
-
-        // res.send('Uploaded');
     });
+    
+consumeFromQueue('finishedPdfQueue', (pdfFile) => {
+    console.log('pdffile = ', pdfFile);
+    if (pdfFile) {
+        datas[pdfFile.id].status = 'finished';
+    }
+});
+    
+app.get('/upload/:id', (req, res) => {
+    const id = req.params.id;
+    const data = datas[id];
+    const status = data.status;
+    console.log('id is :' + id);
+    console.log(status);
+});
 
-app.listen(3000);
+app.listen(3000, () => console.log('Server started on port 3000'));
