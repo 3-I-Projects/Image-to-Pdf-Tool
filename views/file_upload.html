@@ -120,4 +120,31 @@
         </form>
     </div>
 </body>
+<!-- <script>
+    document.getElementById('upload-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        const formData = new FormData(this);
+        
+        fetch('/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+            console.log('Success:', data);
+            window.location.href = '/finished';
+            console.log('Success:', data);
+            console.log('Success:', data);
+            console.log('Success:', data);
+            console.log('Success:', data);
+            const container = document.getElementsByClassName('container')[0];
+            container.append(data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+</script> -->
 </html>

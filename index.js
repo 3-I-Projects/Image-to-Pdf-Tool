@@ -26,6 +26,9 @@ const { sendToQueue, consumeFromQueue } = require('./utils/connection');
 const app = express();
 const upload = multer({ dest: 'uploads/' });
 
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
 app.use('/upload', express.static('./views/file_upload.html'));
 app.use('/finished', express.static('./views/finished.html'));
 
@@ -34,7 +37,7 @@ app.get('/', (req, res) => {
     res.send('<p> Please go to <a href="/upload">Upload page</a></p>')
 });
 
-datas = {};
+var datas = {};
 
 // Upload directory
 // app.get('/upload', (req, res) => {
@@ -45,12 +48,14 @@ datas = {};
 app.post('/upload', upload.array('image-upload'), (req, res) => {    
     const files = req.files;
     
+    var fileIds = {};
     files.map((file) => {
         const id = uuid4();
-        const newFileName = file.filename + '.' + file.mimetype.split('/')[1];
+        const newFileName = id + '.' + file.mimetype.split('/')[1];
         const newPath = path.join(__dirname, 'uploads', newFileName);
 
         const data = { id: id, path: newPath, originalname: file.originalname, status: 'pending' };
+        fileIds[data.id] = data;
         datas[data.id] = data;
         console.log('datas is ');
         console.log(datas);
@@ -59,7 +64,10 @@ app.post('/upload', upload.array('image-upload'), (req, res) => {
         
         fs.renameSync(file.path, newPath);
     })
-    res.redirect('/finished');
+    // res.redirect('/finished');
+    // res.json(fileIds);
+    console.log('fileIds is ', fileIds);
+    res.render('done', { fileIds });
 });
 
 consumeFromQueue('finishedPdfQueue', (pdfFile) => {
