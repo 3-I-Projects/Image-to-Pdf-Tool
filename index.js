@@ -26,8 +26,8 @@ const { sendToQueue, consumeFromQueue } = require('./utils/connection');
 const app = express();
 const upload = multer({ dest: 'uploads/' });
 
-// To render .ejs files
-app.set('view engine', 'ejs');
+app.use('/upload', express.static('./views/file_upload.html'));
+app.use('/finished', express.static('./views/finished.html'));
 
 // Root directory
 app.get('/', (req, res) => {
@@ -37,41 +37,31 @@ app.get('/', (req, res) => {
 datas = {};
 
 // Upload directory
-app
-    // Route the application to /upload
-    .route('/upload')
-    .get((req, res) => {
-        res.render('file_upload');
-    })
-    // Listen for post request from client
-    .post(upload.array('file'), (req, res) => {
-        const files = req.files;
-        
-        // console.log('id: ' + id);
-        files.forEach(file => {
-            const id = uuid4();
-            
-            // Dynamically rename the file with the extension taken from mimetype
-            const newFileName = file.filename + '.' + file.mimetype.split('/')[1];
-            
-            // Create new path for the new file
-            const newPath = path.join(__dirname, 'uploads', newFileName);
-            
-            const data = { id: id, path: newPath, originalname: file.originalname, status: 'pending' };
-            datas[data.id] = data;
-            console.log('datas is ');
-            console.log(datas);
-            console.log('data with id : ' + data.id + ' is ' + data.status);
-            
-            // Send the new file to the queue
-            sendToQueue('ocrQueue', data);
-            
-            // Sync the new file with the old file using the `fs` module
-            fs.renameSync(file.path, newPath);
-            res.render('finished')
-        })
-    });
+app.get('/upload', (req, res) => {
+    res.render('file_upload');
+});
+
+// Listen for post request from client
+app.post('/upload', upload.array('image-upload'), (req, res) => {    
+    const files = req.files;
     
+    files.map((file) => {
+        const id = uuid4();
+        const newFileName = file.filename + '.' + file.mimetype.split('/')[1];
+        const newPath = path.join(__dirname, 'uploads', newFileName);
+
+        fs.renameSync(file.path, newPath);
+
+        const data = { id: id, path: newPath, originalname: file.originalname, status: 'pending' };
+        datas[data.id] = data;
+        console.log('datas is ');
+        console.log(datas);
+        console.log('data with id : ' + data.id + ' is ' + data.status);
+        sendToQueue('ocrQueue', data);
+    })
+    res.redirect('/finished');
+});
+
 consumeFromQueue('finishedPdfQueue', (pdfFile) => {
     console.log('pdffile = ', pdfFile);
     if (pdfFile) {
