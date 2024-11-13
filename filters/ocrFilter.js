@@ -11,4 +11,4 @@ async function ocrFilter() {
     })
 }
 
-ocrFilter();n
+ocrFilter();
