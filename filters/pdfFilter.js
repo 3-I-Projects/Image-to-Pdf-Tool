@@ -10,7 +10,7 @@ async function pdfFilter() {
 
         // wrap the pdf file path with the id to send to the next queue
         const data = { id: translatedData.id, path: pdfFile };
-        console.log('pdf created at ' + data.path);
+        console.log('pdf created at', data.path.trim());
 
         // this queue is the last queue, will be consumed in index.js to render the file for user to download
         sendToQueue('finishedPdfQueue', data);

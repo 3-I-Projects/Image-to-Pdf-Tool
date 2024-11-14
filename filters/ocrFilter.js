@@ -13,7 +13,7 @@ async function ocrFilter() {
         // define a new type of data (only necessary information is kept)
         const data = { id: image.id, text: text };
 
-        console.log('text to be processed: ' + text);
+        console.log('text to be processed:', text.trim());
 
         // send the data to the next queue to process
         await sendToQueue('translateQueue', data);

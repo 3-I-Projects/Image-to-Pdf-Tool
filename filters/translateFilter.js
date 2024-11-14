@@ -15,7 +15,7 @@ async function translateFilter() {
         // wrap the translated text with the id to send to the next queue
         const translatedData = { id: data.id, text: translatedText }
         
-        console.log('translated text: "' + translatedData.text + '"');
+        console.log('translated text:', translatedData.text.trim());
         sendToQueue('pdfQueue', translatedData);
     })
 }

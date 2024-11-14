@@ -70,8 +70,11 @@ consumeFromQueue('finishedPdfQueue', (pdfFile) => {
         // set the status of the file to finished so the user can install it
         datas[pdfFile.id].status = 'finished';
 
+        // fs.unlink(datas[pdfFile.id].path);
+
         // set the file's path to its new path from output folder
         datas[pdfFile.id].path = pdfFile.path;
+        
     }
 });
     
@@ -84,11 +87,6 @@ app.get('/upload/:id', (req, res) => {
 
     // save file's status in a variable
     const status = data.status;
-
-    // console.log('id is :' + id);
-    // console.log(status);
-    // console.log(data.path);
-    // console.log('originalname is ' + data.originalname);
 
     if (status == 'finished')
         // transfer the file with its path from the output folder and name is its original name when the user uploaded it
