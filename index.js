@@ -1,20 +1,7 @@
 // // old code
-// const ocr = require("./utils/ocr");
-// const { createPDF } = require("./utils/pdf");
-// const { translate } = require("./utils/translate");
-
-// (async () => {
-//     try {
-//         const text = await ocr.image2text("./data/sample.png");
-//         console.log(text);
-//         const viText = await translate(text);
-//         console.log(viText);
-//         const pdfFile = createPDF(viText);
-//         console.log("This is PDF file: " + pdfFile)
-//     } catch (e) {
-//         console.log(e);
-//     }
-// })();
+const ocr = require("./utils/ocr");
+const { createPDF } = require("./utils/pdf");
+const { translate } = require("./utils/translate");
 
 const express = require('express');
 const multer = require('multer');
@@ -119,6 +106,41 @@ app.get('/upload/:id/status', (req, res) => {
     // get the data of the file identified by its id
     const data = datas[id];
     res.send(data);
+});
+
+app.post('/old/upload', upload.array('image-upload'), (req, res) => {
+    const files = req.files;
+    
+    var fileIds = {};
+    console.log(`Uploaded file: ${JSON.stringify(req.files)}`);
+    files.map((file) => {
+        const id = uuid4();
+        const newFileName = id + '.' + file.mimetype.split('/')[1];
+        const newPath = path.join(__dirname, 'uploads', newFileName);
+        // const data = { id: id, path: newPath, originalname: file.originalname, status: 'pending' };
+
+        // fileIds[data.id] = data;
+        // datas[data.id] = data;
+
+        // console.log('datas is', datas);
+        // sendToQueue('ocrQueue', data);
+        (async (imageId) => {
+            try {
+                const text = await ocr.image2text(`./uploads/${imageId}.png`);
+                console.log(text);
+                const viText = await translate(text);
+                console.log(viText);
+                const pdfFile = createPDF({ id: imageId, text: viText });
+                console.log("This is PDF file: " + pdfFile)
+            } catch (e) {
+                console.log(e);
+            }
+        })(id);
+        
+        fs.renameSync(file.path, newPath);
+    })
+
+    res.render('done', { fileIds });
 });
 
 app.listen(3000, () => console.log('Server started on port 3000'));
