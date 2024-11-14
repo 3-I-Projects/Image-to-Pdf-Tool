@@ -1,28 +1,59 @@
+// this file provides helper functions to create, send and consume from queues
+
 const amqp = require('amqplib');
 require('dotenv').config();
 
+/**
+* Connect to a connection and channel to start sending messages
+* @param {String} queueName: the name of the queue to be connected
+* @return an object with information of the current connection and channel
+**/
 async function connectToChannel(queueName) {
+    // connect to rabbitmq service running on docker
     const connection = await amqp.connect(process.env.RABBITMQ_IP);
-    // const connection = await amqp.connect('amqp://localhost:5672');
+
+    // create a new channel
     const channel = await connection.createChannel();
+
+    // connect channel to queue with a queue name
     await channel.assertQueue(queueName);
+
+    // return connection and channel's information
     return { connection, channel };
 }
 
+/**
+ * Send a message to a queue with a queue name. This function based on amqp.Channel.sendToQueue() method.
+ * @param {String} queueName the name of the queue to send the messages.
+ * @param {Object} message message to be processed. Message can be an object to contain more information.
+ */
 async function sendToQueue(queueName, message) {
     const { connection, channel } = await connectToChannel(queueName);
     channel.sendToQueue(queueName, Buffer.from(JSON.stringify(message)));
+
+    // close channel and connection after message sent
     await channel.close();
     await connection.close();
 }
 
+/**
+ * Take a message out of the queue. This function based on amqp.Channel.consume() method. 
+ * @param {String} queueName the name of the queue
+ * @param {Function} onMessage a function to be executed after a message is taken out of the queue  
+ */
 async function consumeFromQueue(queueName, onMessage) {
     const { channel } = await connectToChannel(queueName);
     console.log('connected to', queueName);
     channel.consume(queueName, (msg) => {
+        // check if a message is received
         if (msg) {
+            // parse the message to a JSON object
             const message = JSON.parse(msg.content.toString());
+
+            // call the callback function to process the message, passed the parsed message as an argument
             onMessage(message);
+
+            // acknowledge the message, prevent the message from being sent again
             channel.ack(msg);
         }
     })
