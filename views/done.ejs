@@ -79,7 +79,7 @@
     const statuses = document.getElementsByClassName("status");
     console.log(statuses);
     for (let i = 0; i < statuses.length; i++) {
-        if (statuses[i].innerText === 'pending') {
+        if (statuses[i].innerText === 'pending...') {
             let id = statuses[i].parentElement.id;
             console.log(id);
             const interval = setInterval(() => {

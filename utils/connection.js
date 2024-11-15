@@ -3,12 +3,33 @@
 const amqp = require('amqplib');
 require('dotenv').config();
 
+let connection = null;
+let channels = {};
+
+async function getConnection() {
+    if (!connection) {
+        connection = await amqp.connect(process.env.RABBITMQ_IP);
+        console.log('connected to rabbitmq');
+    }
+    return connection;
+}
+
 /**
 * Connect to a connection and channel to start sending messages
 * @param {String} queueName: the name of the queue to be connected
 * @return an object with information of the current connection and channel
 **/
 async function connectToChannel(queueName) {
+    if (!channels[queueName]) {
+        const conn = await getConnection();
+        const channel = await conn.createChannel();
+        await channel.assertQueue(queueName);
+        channels[queueName] = channel;
+        // console.log(`Channel created for queue: ${queueName}`);
+        console.log(channels);
+    }
+    return channels[queueName];
+
     // connect to rabbitmq service running on docker
     const connection = await amqp.connect(process.env.RABBITMQ_IP);
 
@@ -28,12 +49,12 @@ async function connectToChannel(queueName) {
  * @param {Object} message message to be processed. Message can be an object to contain more information.
  */
 async function sendToQueue(queueName, message) {
-    const { connection, channel } = await connectToChannel(queueName);
+    const channel = await connectToChannel(queueName);
     channel.sendToQueue(queueName, Buffer.from(JSON.stringify(message)));
 
     // close channel and connection after message sent
-    await channel.close();
-    await connection.close();
+    // await channel.close();
+    // await connection.close();
 }
 
 /**
@@ -42,7 +63,7 @@ async function sendToQueue(queueName, message) {
  * @param {Function} onMessage a function to be executed after a message is taken out of the queue  
  */
 async function consumeFromQueue(queueName, onMessage) {
-    const { channel } = await connectToChannel(queueName);
+    const channel = await connectToChannel(queueName);
     console.log('connected to', queueName);
     channel.consume(queueName, (msg) => {
         // check if a message is received

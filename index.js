@@ -48,7 +48,7 @@ app.post('/upload', upload.array('image-upload'), (req, res) => {
         // new path to store the file after its name is changed
         const newPath = path.join(__dirname, 'uploads', newFileName);
 
-        const data = { id: id, path: newPath, originalname: file.originalname, status: 'pending' };
+        const data = { id: id, path: newPath, originalname: file.originalname, status: 'pending...' };
 
         // add the file data to fileIds and datas
         fileIds[data.id] = data;
@@ -126,21 +126,23 @@ app.post('/old/upload', upload.array('image-upload'), (req, res) => {
         const id = uuid4();
         const newFileName = id + '.' + file.mimetype.split('/')[1];
         const newPath = path.join(__dirname, 'uploads', newFileName);
-        // const data = { id: id, path: newPath, originalname: file.originalname, status: 'pending' };
+        const data = { id: id, path: newPath, originalname: file.originalname, status: 'pending...' };
 
-        // fileIds[data.id] = data;
-        // datas[data.id] = data;
+        fileIds[data.id] = data;
+        datas[data.id] = data;
 
         // console.log('datas is', datas);
         // sendToQueue('ocrQueue', data);
         (async (imageId) => {
             try {
                 const text = await ocr.image2text(`./uploads/${imageId}.png`);
-                console.log(text);
+                // console.log(text);
                 const viText = await translate(text);
-                console.log(viText);
+                // console.log(viText);
                 const pdfFile = createPDF({ id: imageId, text: viText });
-                console.log("This is PDF file: " + pdfFile)
+                console.log("This is PDF file: " + pdfFile);
+                datas[data.id].status = 'finished';
+                datas[data.id].path = pdfFile;
             } catch (e) {
                 console.log(e);
             }
