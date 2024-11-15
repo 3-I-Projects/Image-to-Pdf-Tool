@@ -8,9 +8,13 @@ async function pdfFilter() {
     consumeFromQueue('pdfQueue', async (translatedData) => {
         const pdfFile = await createPDF(translatedData);
 
+        const startTime = Date.now();
         // wrap the pdf file path with the id to send to the next queue
         const data = { id: translatedData.id, path: pdfFile };
-        console.log('pdf created at', data.path.trim());
+        const endTime = Date.now();
+        console.log(`Elapsed time of pdf: ${endTime - startTime} ms`);
+
+        // console.log('pdf created at', data.path.trim());
 
         // this queue is the last queue, will be consumed in index.js to render the file for user to download
         sendToQueue('finishedPdfQueue', data);
