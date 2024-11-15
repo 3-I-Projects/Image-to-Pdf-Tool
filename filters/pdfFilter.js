@@ -6,12 +6,12 @@ const { createPDF } = require('../utils/pdf');
  */
 async function pdfFilter() {
     consumeFromQueue('pdfQueue', async (translatedData) => {
-        const pdfFile = await createPDF(translatedData);
-
         const startTime = Date.now();
+        const pdfFile = createPDF(translatedData);
+        const endTime = Date.now();
+
         // wrap the pdf file path with the id to send to the next queue
         const data = { id: translatedData.id, path: pdfFile };
-        const endTime = Date.now();
         console.log(`Elapsed time of pdf: ${endTime - startTime} ms`);
 
         // console.log('pdf created at', data.path.trim());

@@ -9,6 +9,7 @@ const path = require('path');
 const fs = require('fs');
 const uuid4 = require('uuid4');
 const { sendToQueue, consumeFromQueue } = require('./utils/connection');
+const { file } = require("pdfkit");
 
 const app = express();
 const upload = multer({ dest: 'uploads/' });
@@ -32,10 +33,11 @@ var datas = {};
 app.post('/upload', upload.array('image-upload'), (req, res) => {
     // get all files uploaded from the request 
     const files = req.files;
-    
+
+    const startTime = Date.now();
     // variable to store all the file ids, used to render the file name in done.ejs so that user can download the file
     var fileIds = {};
-    console.log(`Uploaded file: ${JSON.stringify(req.files)}`);
+    // console.log(`Uploaded file: ${JSON.stringify(req.files)}`);
     files.map((file) => {
         // generate a unique id, this id will be attached to the file to identified the file
         const id = uuid4();
@@ -52,28 +54,37 @@ app.post('/upload', upload.array('image-upload'), (req, res) => {
         fileIds[data.id] = data;
         datas[data.id] = data;
 
-        console.log('datas is', datas);
+        // console.log('datas is', datas);
         sendToQueue('ocrQueue', data);
         
         // sync the old file with its new path to change its name
         fs.renameSync(file.path, newPath);
     })
+    const endTime = Date.now();
+    console.log(`Elapsed time for parsing files: ${endTime - startTime} ms`);
+
 
     // render the done.ejs file with parameter are all the file ids
     res.render('done', { fileIds });
+
+    // send all files after returning the ids to the client first
+    // for (var id in fileIds) {
+    //     console.log(`sending ${fileIds[id].id} to ocrQueue`);
+    //     sendToQueue('ocrQueue', fileIds[id]);
+    // };
 });
 
 // function to take out a message from a queue to process it
 consumeFromQueue('finishedPdfQueue', (pdfFile) => {
     // check if there is a pdf file after processed 
     if (pdfFile) {
-        // set the status of the file to finished so the user can install it
-        datas[pdfFile.id].status = 'finished';
-
-        // fs.unlink(datas[pdfFile.id].path);
-
-        // set the file's path to its new path from output folder
-        datas[pdfFile.id].path = pdfFile.path;
+        if (datas[pdfFile.id] !== undefined) {
+            // set the status of the file to finished so the user can install it
+            datas[pdfFile.id].status = 'finished';
+                
+            // set the file's path to its new path from output folder
+            datas[pdfFile.id].path = pdfFile.path;
+        }
         
     }
 });

@@ -13,7 +13,7 @@ async function ocrFilter() {
         const text = await image2text(image.path);
         const endTime = Date.now();
 
-        console.log(`Elapsed time of ocr: ${endTime - startTime} ms`);
+        console.log(`Elapsed time for ${image.id} of ocr: ${endTime - startTime} ms`);
 
         // define a new type of data (only necessary information is kept)
         const data = { id: image.id, text: text };
