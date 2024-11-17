@@ -8,7 +8,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const uuid4 = require('uuid4');
-const { sendToQueue, consumeFromQueue } = require('./utils/connection');
+const { sendToQueue, consumeFromQueue, connectToChannel } = require('./utils/connection');
 const { file } = require("pdfkit");
 
 const app = express();
@@ -74,6 +74,8 @@ app.post('/upload', upload.array('image-upload'), (req, res) => {
     // };
 });
 
+// fix bug where the server would open many connection at once resulting in multiple channels when only 1 is needed
+setTimeout(() => connectToChannel('ocrQueue'), 1000);
 // function to take out a message from a queue to process it
 consumeFromQueue('finishedPdfQueue', (pdfFile) => {
     // check if there is a pdf file after processed 
