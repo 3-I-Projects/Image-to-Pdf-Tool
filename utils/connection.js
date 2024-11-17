@@ -9,6 +9,7 @@ let channels = {};
 async function getConnection() {
     if (!connection) {
         connection = await amqp.connect(process.env.RABBITMQ_IP);
+        // console.log(connection.connection.stream.localPort);
         console.log('connected to rabbitmq');
     }
     return connection;
@@ -25,8 +26,8 @@ async function connectToChannel(queueName) {
         const channel = await conn.createChannel();
         await channel.assertQueue(queueName);
         channels[queueName] = channel;
-        // console.log(`Channel created for queue: ${queueName}`);
-        console.log(channels);
+        console.log(`Channel created for queue: ${queueName}`);
+        // console.log(channels);
     }
     return channels[queueName];
 
@@ -51,6 +52,7 @@ async function connectToChannel(queueName) {
 async function sendToQueue(queueName, message) {
     const channel = await connectToChannel(queueName);
     channel.sendToQueue(queueName, Buffer.from(JSON.stringify(message)));
+    // console.log(channels);
 
     // close channel and connection after message sent
     // await channel.close();
@@ -62,18 +64,21 @@ async function sendToQueue(queueName, message) {
  * @param {String} queueName the name of the queue
  * @param {Function} onMessage a function to be executed after a message is taken out of the queue  
  */
-async function consumeFromQueue(queueName, onMessage) {
+async function consumeFromQueue(queueName, onMessage, prefetchLimit = 0) {
     const channel = await connectToChannel(queueName);
-    console.log('connected to', queueName);
-    channel.consume(queueName, (msg) => {
+    channel.prefetch(prefetchLimit);
+    console.log(`connected to ${queueName} with prefetch limit ${prefetchLimit}`);
+    channel.consume(queueName, async (msg) => {
         // check if a message is received
         if (msg) {
             // parse the message to a JSON object
             const message = JSON.parse(msg.content.toString());
 
+            console.log('calling onMessage');
             // call the callback function to process the message, passed the parsed message as an argument
-            onMessage(message);
-
+            await onMessage(message);
+    
+            console.log('acked');
             // acknowledge the message, prevent the message from being sent again
             channel.ack(msg);
         }
@@ -82,7 +87,8 @@ async function consumeFromQueue(queueName, onMessage) {
 
 module.exports = {
     sendToQueue,
-    consumeFromQueue
+    consumeFromQueue,
+    connectToChannel
 }
   
   
