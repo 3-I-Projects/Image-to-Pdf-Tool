@@ -20,6 +20,7 @@
     "open-google-translator": "^1.0.5",
     "path": "^0.12.7",
     "pdfkit": "^0.15.0",
+    "rimraf": "^6.0.1",
     "uuid4": "^2.0.3"
   },
   "devDependencies": {

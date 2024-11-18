@@ -66,7 +66,10 @@ async function sendToQueue(queueName, message) {
  */
 async function consumeFromQueue(queueName, onMessage, prefetchLimit = 0) {
     const channel = await connectToChannel(queueName);
+
+    // apply rate limiting
     channel.prefetch(prefetchLimit);
+    
     console.log(`connected to ${queueName} with prefetch limit ${prefetchLimit}`);
     channel.consume(queueName, async (msg) => {
         // check if a message is received
@@ -82,7 +85,8 @@ async function consumeFromQueue(queueName, onMessage, prefetchLimit = 0) {
 
             console.log(`Elapsed time for processing ${queueName}: ${endTime - startTime}ms`)
     
-            // console.log('acked');
+            console.log('acked');
+
             // acknowledge the message, prevent the message from being sent again
             channel.ack(msg);
         }
@@ -94,5 +98,4 @@ module.exports = {
     consumeFromQueue,
     connectToChannel
 }
-  
   
