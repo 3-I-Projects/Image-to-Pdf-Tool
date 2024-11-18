@@ -9,13 +9,13 @@ async function ocrFilter() {
     consumeFromQueue('ocrQueue', async (image) => {
         try {
 
-            const startTime = Date.now();        
+            // const startTime = Date.now();        
             // send the image information to image2text to recognize characters, await for return to move on
-            console.log('start ocr-ing...');
+            // console.log('start ocr-ing...');
             const text = await image2text(image.path);
-            const endTime = Date.now();
+            // const endTime = Date.now();
             
-            console.log(`Elapsed time for ./uploads/${image.id}.png of ocr: ${endTime - startTime} ms`);
+            // console.log(`Elapsed time for ./uploads/${image.id}.png of ocr: ${endTime - startTime} ms`);
             
             // define a new type of data (only necessary information is kept)
             const data = { id: image.id, text: text };

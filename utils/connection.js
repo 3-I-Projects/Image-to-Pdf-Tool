@@ -74,11 +74,15 @@ async function consumeFromQueue(queueName, onMessage, prefetchLimit = 0) {
             // parse the message to a JSON object
             const message = JSON.parse(msg.content.toString());
 
-            console.log('calling onMessage');
+            // console.log('calling onMessage');
+            const startTime = Date.now();
             // call the callback function to process the message, passed the parsed message as an argument
             await onMessage(message);
+            const endTime = Date.now();
+
+            console.log(`Elapsed time for processing ${queueName}: ${endTime - startTime}ms`)
     
-            console.log('acked');
+            // console.log('acked');
             // acknowledge the message, prevent the message from being sent again
             channel.ack(msg);
         }
