@@ -109,6 +109,16 @@ app.get('/upload/:id', (req, res) => {
         res.send('File is not ready');
 });
 
+app.use(express.json());
+app.post('/upload/statuses', (req, res) => {
+    const { ids } = req.body;
+    const statuses = ids.map(id => ({
+        id,
+        status: datas[id].status
+    }));
+    res.json(statuses);
+});
+
 // endpoint to get status of a file 
 app.get('/upload/:id/status', (req, res) => {
     // get id of a file
