@@ -20,6 +20,7 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.use('/upload', express.static('./views/file_upload.html'));
 app.use('/finished', express.static('./views/finished.html'));
+app.use('/old/upload', express.static('./views/old_file_upload.html'));
 
 // Root directory
 app.get('/', (req, res) => {
