@@ -1,4 +1,3 @@
-const { text } = require('pdfkit');
 const { sendToQueue, consumeFromQueue, connectToChannel } = require('../utils/connection');
 const { translate } = require('../utils/translate');
 
@@ -25,7 +24,7 @@ async function translateFilter() {
             console.error(error);
         }
     });
-    setTimeout(() => connectToChannel('pdfQueue'), 1000);
+    setTimeout(() => connectToChannel('pdfQueue'), 100);
 }
 
 translateFilter();

@@ -24,12 +24,12 @@ async function ocrFilter() {
             
             // send the data to the next queue to process
             await sendToQueue('translateQueue', data);
-            console.log('sent to translateQueue');
+            p// console.log('sent to translateQueue');
         } catch (error) {
             console.error(error);
         }
-    }, 40);
-    setTimeout(() => connectToChannel('translateQueue'), 1000);
+    }, 8);
+    setTimeout(() => connectToChannel('translateQueue'), 100);
 }
 
 ocrFilter();
