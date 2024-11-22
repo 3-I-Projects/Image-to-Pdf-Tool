@@ -66,8 +66,9 @@ async function consumeFromQueue(queueName, onMessage, prefetchLimit = 0) {
             await onMessage(message);
             const endTime = Date.now();
 
-            console.log(`Elapsed time for processing ${message.id} in ${queueName}: ${endTime - startTime}ms`)
-    
+            if (queueName !== 'finishedPdfQueue') {
+                console.log(`Elapsed time for processing ${message.id} in ${queueName}: ${endTime - startTime}ms`)
+            }
             // console.log('acked');
 
             // acknowledge the message, prevent the message from being sent again

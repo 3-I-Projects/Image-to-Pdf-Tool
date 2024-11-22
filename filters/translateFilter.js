@@ -1,4 +1,3 @@
-const { text } = require('pdfkit');
 const { sendToQueue, consumeFromQueue, connectToChannel } = require('../utils/connection');
 const { translate } = require('../utils/translate');
 

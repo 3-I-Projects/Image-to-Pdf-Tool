@@ -1,4 +1,3 @@
-// // old code
 const ocr = require("./utils/ocr");
 const { createPDF } = require("./utils/pdf");
 const { translate } = require("./utils/translate");
@@ -9,7 +8,6 @@ const path = require('path');
 const fs = require('fs');
 const uuid4 = require('uuid4');
 const { sendToQueue, consumeFromQueue, connectToChannel } = require('./utils/connection');
-const { file } = require("pdfkit");
 
 const app = express();
 const upload = multer({ dest: 'uploads/' });
@@ -19,7 +17,6 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 app.use('/upload', express.static('./views/file_upload.html'));
-app.use('/finished', express.static('./views/finished.html'));
 app.use('/old/upload', express.static('./views/old_file_upload.html'));
 
 // Root directory
@@ -48,7 +45,7 @@ app.post('/upload', upload.array('image-upload'), (req, res) => {
         // new path to store the file after its name is changed
         const newPath = path.join(__dirname, 'uploads', newFileName);
 
-        const data = { id: id, path: newPath, originalname: file.originalname, status: 'pending...', processingStart: Date.now() };
+        const data = { id: id, path: newPath, originalname: file.originalname, status: 'pending...', processingTime: Date.now() };
 
         // add the file data to fileIds and datas
         fileIds[data.id] = data;
@@ -66,16 +63,10 @@ app.post('/upload', upload.array('image-upload'), (req, res) => {
 
     // render the done.ejs file with parameter are all the file ids
     res.render('done', { fileIds });
-
-    // send all files after returning the ids to the client first
-    // for (var id in fileIds) {
-    //     console.log(`sending ${fileIds[id].id} to ocrQueue`);
-    //     sendToQueue('ocrQueue', fileIds[id]);
-    // };
 });
 
 // fix bug where the server would open many connection at once resulting in multiple channels when only 1 is needed
-setTimeout(() => connectToChannel('ocrQueue'), 1000);
+setTimeout(() => connectToChannel('ocrQueue'), 100);
 // function to take out a message from a queue to process it
 consumeFromQueue('finishedPdfQueue', (pdfFile) => {
     // check if there is a pdf file after processed 
@@ -87,7 +78,13 @@ consumeFromQueue('finishedPdfQueue', (pdfFile) => {
             // set the file's path to its new path from output folder
             datas[pdfFile.id].path = pdfFile.path;
 
-            console.log(`Finished processing ${pdfFile.id} in ${Date.now() - datas[pdfFile.id].processingStart}ms`);
+            datas[pdfFile.id].processingTime = Date.now() - datas[pdfFile.id].processingTime;
+            console.log(`Finished processing ${pdfFile.id} in ${datas[pdfFile.id].processingTime}ms`);
+
+            if (Object.values(datas).every(data => data.status === 'finished')) {
+                const average = Object.values(datas).reduce((acc, data) => acc + data.processingTime, 0) / Object.values(datas).length;
+                console.log(`Average processing time: ${average/1000}s`);
+            }
         }
         
     }
@@ -135,7 +132,6 @@ app.post('/old/upload', upload.array('image-upload'), (req, res) => {
     const files = req.files;
     
     var fileIds = {};
-    console.log(`Uploaded file: ${JSON.stringify(req.files)}`);
     files.map((file) => {
         const id = uuid4();
         const newFileName = id + '.' + file.mimetype.split('/')[1];
@@ -148,11 +144,8 @@ app.post('/old/upload', upload.array('image-upload'), (req, res) => {
         (async (imageId) => {
             try {
                 const text = await ocr.image2text(`./uploads/${imageId}.png`);
-                // console.log(text);
                 const viText = await translate(text);
-                // console.log(viText);
                 const pdfFile = createPDF({ id: imageId, text: viText });
-                console.log("This is PDF file: " + pdfFile);
                 datas[data.id].status = 'finished';
                 datas[data.id].path = pdfFile;
             } catch (e) {
