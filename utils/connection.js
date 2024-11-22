@@ -30,18 +30,6 @@ async function connectToChannel(queueName) {
         // console.log(channels);
     }
     return channels[queueName];
-
-    // connect to rabbitmq service running on docker
-    const connection = await amqp.connect(process.env.RABBITMQ_IP);
-
-    // create a new channel
-    const channel = await connection.createChannel();
-
-    // connect channel to queue with a queue name
-    await channel.assertQueue(queueName);
-
-    // return connection and channel's information
-    return { connection, channel };
 }
 
 /**
@@ -52,11 +40,6 @@ async function connectToChannel(queueName) {
 async function sendToQueue(queueName, message) {
     const channel = await connectToChannel(queueName);
     channel.sendToQueue(queueName, Buffer.from(JSON.stringify(message)));
-    // console.log(channels);
-
-    // close channel and connection after message sent
-    // await channel.close();
-    // await connection.close();
 }
 
 /**
@@ -83,9 +66,9 @@ async function consumeFromQueue(queueName, onMessage, prefetchLimit = 0) {
             await onMessage(message);
             const endTime = Date.now();
 
-            console.log(`Elapsed time for processing ${queueName}: ${endTime - startTime}ms`)
+            console.log(`Elapsed time for processing ${message.id} in ${queueName}: ${endTime - startTime}ms`)
     
-            console.log('acked');
+            // console.log('acked');
 
             // acknowledge the message, prevent the message from being sent again
             channel.ack(msg);

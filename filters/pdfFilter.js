@@ -24,7 +24,7 @@ async function pdfFilter() {
             console.error(error);
         }
     });
-    setTimeout(() => connectToChannel('finishedPdfQueue'), 1000);
+    setTimeout(() => connectToChannel('finishedPdfQueue'), 100);
 }
 
 pdfFilter();

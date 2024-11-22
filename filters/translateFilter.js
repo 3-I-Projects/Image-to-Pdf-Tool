@@ -25,7 +25,7 @@ async function translateFilter() {
             console.error(error);
         }
     });
-    setTimeout(() => connectToChannel('pdfQueue'), 1000);
+    setTimeout(() => connectToChannel('pdfQueue'), 100);
 }
 
 translateFilter();

@@ -38,7 +38,6 @@ app.post('/upload', upload.array('image-upload'), (req, res) => {
     const startTime = Date.now();
     // variable to store all the file ids, used to render the file name in done.ejs so that user can download the file
     var fileIds = {};
-    // console.log(`Uploaded file: ${JSON.stringify(req.files)}`);
     files.map((file) => {
         // generate a unique id, this id will be attached to the file to identified the file
         const id = uuid4();
@@ -49,7 +48,7 @@ app.post('/upload', upload.array('image-upload'), (req, res) => {
         // new path to store the file after its name is changed
         const newPath = path.join(__dirname, 'uploads', newFileName);
 
-        const data = { id: id, path: newPath, originalname: file.originalname, status: 'pending...' };
+        const data = { id: id, path: newPath, originalname: file.originalname, status: 'pending...', processingStart: Date.now() };
 
         // add the file data to fileIds and datas
         fileIds[data.id] = data;
@@ -87,6 +86,8 @@ consumeFromQueue('finishedPdfQueue', (pdfFile) => {
                 
             // set the file's path to its new path from output folder
             datas[pdfFile.id].path = pdfFile.path;
+
+            console.log(`Finished processing ${pdfFile.id} in ${Date.now() - datas[pdfFile.id].processingStart}ms`);
         }
         
     }
@@ -144,8 +145,6 @@ app.post('/old/upload', upload.array('image-upload'), (req, res) => {
         fileIds[data.id] = data;
         datas[data.id] = data;
 
-        // console.log('datas is', datas);
-        // sendToQueue('ocrQueue', data);
         (async (imageId) => {
             try {
                 const text = await ocr.image2text(`./uploads/${imageId}.png`);
