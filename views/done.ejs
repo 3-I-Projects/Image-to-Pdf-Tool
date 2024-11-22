@@ -102,15 +102,20 @@
         })
         .then(response => response.json())
         .then(datas => {
-            console.log(datas);
+            // console.log(datas);
             datas.forEach(data => {
-                console.log(data);
+                // console.log(data);
                 if (data.status === 'finished') {
                     statusElements[data.id].innerText = 'finished';
+                    pendingIds.splice(pendingIds.indexOf(data.id), 1);
+                    // console.log(pendingIds);
+                    // console.log('length is', pendingIds.length);
+                    if (pendingIds.length === 0) {
+                        clearInterval(batchInterval);
+                    }
                 }
             });
         })
-        
     }, 5000);
 </script>
 </html>
