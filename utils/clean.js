@@ -17,3 +17,13 @@ setTimeout(() => {
     fs.mkdir(dir1, { recursive: true }, (err) => { });
     fs.mkdir(dir2, { recursive: true }, (err) => { });
 }, 100);
+
+(async () => {
+    await rimraf.rimraf(dir1);
+    await rimraf.rimraf(dir2);
+})();
+
+setTimeout(() => {
+    fs.mkdir(dir1, { recursive: true }, (err) => { });
+    fs.mkdir(dir2, { recursive: true }, (err) => { });
+}, 100);

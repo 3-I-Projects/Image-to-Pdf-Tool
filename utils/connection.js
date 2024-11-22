@@ -6,6 +6,10 @@ require('dotenv').config();
 let connection = null;
 let channels = {};
 
+/**
+ * 
+ * @returns {Promise<amqp.Connection>}
+ */
 async function getConnection() {
     if (!connection) {
         connection = await amqp.connect(process.env.RABBITMQ_IP);
@@ -18,7 +22,7 @@ async function getConnection() {
 /**
 * Connect to a connection and channel to start sending messages
 * @param {String} queueName: the name of the queue to be connected
-* @return an object with information of the current connection and channel
+* @return {amqp.Channel} an object with information of the current connection and channel
 **/
 async function connectToChannel(queueName) {
     if (!channels[queueName]) {
