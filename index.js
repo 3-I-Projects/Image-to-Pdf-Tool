@@ -32,9 +32,9 @@ app.post('/upload', upload.array('image-upload'), (req, res) => {
     // get all files uploaded from the request 
     const files = req.files;
 
-    const startTime = Date.now();
     // variable to store all the file ids, used to render the file name in done.ejs so that user can download the file
     var fileIds = {};
+    const startTime = Date.now();
     files.map((file) => {
         // generate a unique id, this id will be attached to the file to identified the file
         const id = uuid4();
@@ -44,22 +44,21 @@ app.post('/upload', upload.array('image-upload'), (req, res) => {
 
         // new path to store the file after its name is changed
         const newPath = path.join(__dirname, 'uploads', newFileName);
+        // sync the old file with its new path to change its name
+        fs.renameSync(file.path, newPath);
 
-        const data = { id: id, path: newPath, originalname: file.originalname, status: 'pending...', processingTime: Date.now() };
+        const imageBuffer = fs.readFileSync(newPath);
+        const imageBase64 = imageBuffer.toString('base64');
+        const data = { id: id, base64: imageBase64, path: newPath, originalname: file.originalname, status: 'pending...', processingTime: Date.now() };
 
         // add the file data to fileIds and datas
         fileIds[data.id] = data;
         datas[data.id] = data;
 
-        // console.log('datas is', datas);
         sendToQueue('ocrQueue', data);
-        
-        // sync the old file with its new path to change its name
-        fs.renameSync(file.path, newPath);
     })
     const endTime = Date.now();
     console.log(`Elapsed time for parsing files: ${endTime - startTime} ms`);
-
 
     // render the done.ejs file with parameter are all the file ids
     res.render('done', { fileIds });
