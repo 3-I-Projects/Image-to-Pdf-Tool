@@ -12,7 +12,10 @@ async function ocrFilter() {
             // const startTime = Date.now();        
             // send the image information to image2text to recognize characters, await for return to move on
             // console.log('start ocr-ing...');
-            const text = await image2text(image.path);
+            // const receivedMessage = JSON.parse(image.content.toString());
+            const imageBuffer = Buffer.from(image.base64, 'base64');
+            console.log(imageBuffer);
+            const text = await image2text(imageBuffer);
             // const endTime = Date.now();
             
             // console.log(`Elapsed time for ./uploads/${image.id}.png of ocr: ${endTime - startTime} ms`);
@@ -24,11 +27,11 @@ async function ocrFilter() {
             
             // send the data to the next queue to process
             await sendToQueue('translateQueue', data);
-            p// console.log('sent to translateQueue');
+            // console.log('sent to translateQueue');
         } catch (error) {
             console.error(error);
         }
-    }, 8);
+    }, 5);
     setTimeout(() => connectToChannel('translateQueue'), 100);
 }
 
