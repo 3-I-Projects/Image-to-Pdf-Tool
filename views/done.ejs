@@ -76,6 +76,18 @@
     </div>
 </body>
 <script>
+    document.getElementById('fireLink').addEventListener('click', async () => {
+        const links = document.querySelectorAll('td a');
+        for (const link of links) {
+            const url = link.href;
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = '';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+    });
     const batchInterval = setInterval(() => {
         const statuses = document.getElementsByClassName('status');
         const pendingIds = [];
