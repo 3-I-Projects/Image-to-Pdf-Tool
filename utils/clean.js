@@ -8,11 +8,6 @@ const dir2 = 'D:/CODING/code/software_architecture/CS2-SoftwareArchitecture/outp
 // const relativeDir1 = '../uploads';
 // const relativeDir2 = '../output';
 
-(async () => {
-    await rimraf.rimraf(dir1);
-    await rimraf.rimraf(dir2);
-})();
-
 setTimeout(() => {
     fs.mkdir(dir1, { recursive: true }, (err) => { });
     fs.mkdir(dir2, { recursive: true }, (err) => { });
@@ -22,8 +17,3 @@ setTimeout(() => {
     await rimraf.rimraf(dir1);
     await rimraf.rimraf(dir2);
 })();
-
-setTimeout(() => {
-    fs.mkdir(dir1, { recursive: true }, (err) => { });
-    fs.mkdir(dir2, { recursive: true }, (err) => { });
-}, 100);
