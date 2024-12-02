@@ -3,10 +3,10 @@ const fs = require('fs');
 const path = require('path');
 const rimraf = require('rimraf');
 
-const dir1 = 'D:/CODING/code/software_architecture/CS2-SoftwareArchitecture/uploads';
-const dir2 = 'D:/CODING/code/software_architecture/CS2-SoftwareArchitecture/output';
-// const relativeDir1 = '../uploads';
-// const relativeDir2 = '../output';
+// const dir1 = `D:/CODING/code/software_architecture/CS2-SoftwareArchitecture/uploads`;
+// const dir2 = 'D:/CODING/code/software_architecture/CS2-SoftwareArchitecture/output';
+const dir1 = '../uploads';
+const dir2 = '../output';
 
 (async () => {
     await rimraf.rimraf(dir1);
@@ -16,7 +16,7 @@ const dir2 = 'D:/CODING/code/software_architecture/CS2-SoftwareArchitecture/outp
 setTimeout(() => {
     fs.mkdir(dir1, { recursive: true }, (err) => { });
     fs.mkdir(dir2, { recursive: true }, (err) => { });
-}, 100);
+}, 2000);
 
 (async () => {
     await rimraf.rimraf(dir1);
@@ -26,4 +26,4 @@ setTimeout(() => {
 setTimeout(() => {
     fs.mkdir(dir1, { recursive: true }, (err) => { });
     fs.mkdir(dir2, { recursive: true }, (err) => { });
-}, 100);
+}, 2000);

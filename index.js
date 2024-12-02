@@ -73,9 +73,16 @@ consumeFromQueue('finishedPdfQueue', (pdfFile) => {
         if (datas[pdfFile.id] !== undefined) {
             // set the status of the file to finished so the user can install it
             datas[pdfFile.id].status = 'finished';
-                
+            
             // set the file's path to its new path from output folder
-            datas[pdfFile.id].path = pdfFile.path;
+            datas[pdfFile.id].path = `./output/${pdfFile.id}.pdf`;
+            fs.writeFile(datas[pdfFile.id].path, Buffer.from(pdfFile.encodedPDF, 'base64'), (err) => {
+                if (err) {
+                    console.error('Error saving pdf:', err)
+                } else {
+                    // console.log('PDF successfully saved to', datas[pdfFile.id].path)
+                }
+            });
 
             datas[pdfFile.id].processingTime = Date.now() - datas[pdfFile.id].processingTime;
             console.log(`Finished processing ${pdfFile.id} in ${datas[pdfFile.id].processingTime}ms`);

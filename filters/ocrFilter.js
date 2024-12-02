@@ -11,7 +11,6 @@ async function ocrFilter() {
 
             // const startTime = Date.now();        
             // send the image information to image2text to recognize characters, await for return to move on
-            console.log(imageBuffer);
             const imageBuffer = Buffer.from(image.base64, 'base64');
             const text = await image2text(imageBuffer);
             // const endTime = Date.now();
