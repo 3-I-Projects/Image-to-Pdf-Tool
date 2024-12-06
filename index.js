@@ -49,7 +49,7 @@ app.post('/upload', upload.array('image-upload'), (req, res) => {
 
         const imageBuffer = fs.readFileSync(newPath);
         const imageBase64 = imageBuffer.toString('base64');
-        const data = { id: id, base64: imageBase64, path: newPath, originalname: file.originalname, status: 'pending...', processingTime: Date.now() };
+        const data = { id: id, path: newPath, originalname: file.originalname, status: 'pending...', base64: imageBase64,  processingTime: Date.now() };
 
         // add the file data to fileIds and datas
         fileIds[data.id] = data;

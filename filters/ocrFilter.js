@@ -28,7 +28,7 @@ async function ocrFilter() {
         } catch (error) {
             console.error(error);
         }
-    }, 8);
+    }, parseInt(process.argv[2]));
     setTimeout(() => connectToChannel('translateQueue'), 100);
 }
 
