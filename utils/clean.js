@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const rimraf = require('rimraf');
 
-// const dir1 = `D:/CODING/code/software_architecture/CS2-SoftwareArchitecture/uploads`;
+// const dir1 = 'D:/CODING/code/software_architecture/CS2-SoftwareArchitecture/uploads';
 // const dir2 = 'D:/CODING/code/software_architecture/CS2-SoftwareArchitecture/output';
 const dir1 = '../uploads';
 const dir2 = '../output';
