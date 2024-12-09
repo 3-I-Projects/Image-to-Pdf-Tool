@@ -1,5 +1,5 @@
 const { consumeFromQueue, sendToQueue, connectToChannel } = require('../utils/connection');
-const { createPDF } = require('../utils/pdf');
+const { createPDF, encodePDF } = require('../utils/pdf');
 
 /**
  * Filter to process text and create PDF files
@@ -9,11 +9,11 @@ async function pdfFilter() {
         try {
 
             // const startTime = Date.now();
-            const pdfFile = createPDF(translatedData);
+            const pdfFile = encodePDF(translatedData);
             // const endTime = Date.now();
             
             // wrap the pdf file path with the id to send to the next queue
-            const data = { id: translatedData.id, path: pdfFile };
+            const data = { id: translatedData.id, encodedPDF: pdfFile };
             // console.log(`Elapsed time of pdf: ${endTime - startTime} ms`);
             
             // console.log('pdf created at', data.path.trim());

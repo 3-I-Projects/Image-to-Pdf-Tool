@@ -13,6 +13,7 @@ let channels = {};
 async function getConnection() {
     if (!connection) {
         connection = await amqp.connect(process.env.RABBITMQ_IP);
+        // connection = await amqp.connect('amqp://10.10.72.15:5672');
         // console.log(connection.connection.stream.localPort);
         console.log('connected to rabbitmq');
     }

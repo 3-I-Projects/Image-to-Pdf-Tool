@@ -9,7 +9,7 @@ async function ocrFilter() {
     consumeFromQueue('ocrQueue', async (image) => {
         try {
 
-            // const startTime = Date.now();        
+            // const startTime = Date.now();
             // send the image information to image2text to recognize characters, await for return to move on
             const imageBuffer = Buffer.from(image.base64, 'base64');
             const text = await image2text(imageBuffer);
@@ -32,4 +32,4 @@ async function ocrFilter() {
     setTimeout(() => connectToChannel('translateQueue'), 100);
 }
 
-ocrFilter();
+ocrFilter();    

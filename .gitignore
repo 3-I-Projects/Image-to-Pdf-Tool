@@ -8,3 +8,5 @@ test.sh
 data83/
 data332/
 data576/
+.gitignore
+utils/connection.js

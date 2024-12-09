@@ -3,12 +3,12 @@ module.exports = {
         {
             name: "main application",
             script: "index.js",
-            exec_mode: 'cluster'
+            // exec_mode: 'cluster'
         },
         {
             name: "ocrFilter",
             script: "./filters/ocrFilter.js",
-            instances: "2",
+            instances: "1",
             exec_mode: 'cluster',
             // restart_delay: 5000
         },
@@ -22,7 +22,7 @@ module.exports = {
         {
             name: "pdfFilter",
             script: "./filters/pdfFilter.js",
-            instances: "2",
+            instances: "1",
             exec_mode: 'cluster',
             // restart_delay: 5000 
         }

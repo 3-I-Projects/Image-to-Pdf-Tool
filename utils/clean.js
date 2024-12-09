@@ -16,7 +16,7 @@ const dir2 = './output';
 setTimeout(() => {
     fs.mkdir(dir1, { recursive: true }, (err) => { });
     fs.mkdir(dir2, { recursive: true }, (err) => { });
-}, 100);
+}, 2000);
 
 (async () => {
     await rimraf.rimraf(dir1);
